@@ -5,8 +5,7 @@ import io
 import tarfile
 from typing import List
 
-STUDENT_OUTPUT_FILE = '/home/rishabh-yoga/Desktop/Sem 6/Project/BTP_Evaluation_Lab/output/output.txt'
-
+STUDENT_OUTPUT_FILE = '/home/dic/Desktop/Rishabh/BTP_Evaluation_Lab/output/output.txt'
 if os.path.exists(STUDENT_OUTPUT_FILE):
     os.remove(STUDENT_OUTPUT_FILE)
 
@@ -33,7 +32,7 @@ def runSandbox(code_path:str, inputs:List[str]) -> dict:
         # This is the docker container configuration 
         container = client.containers.create(
                 image = "gcc-sandbox:latest",
-                command = ["sh", "-c","gcc /app/main.c -o program 2> /app/stderr.txt&& ./program < /app/test.txt > /app/stdout.txt 2>> /app/stderr.txt"], 
+                command = ["sh", "-c","touch /app/stdout.txt & touch /app/stderr.txt & gcc /app/main.c -o program 2>> /app/stderr.txt&& ./program < /app/test.txt >> /app/stdout.txt 2>> /app/stderr.txt"], 
                 mem_limit = '128m', 
                 nano_cpus = 1000000000, 
                 volumes= {
@@ -60,7 +59,6 @@ def runSandbox(code_path:str, inputs:List[str]) -> dict:
             signal.alarm(5)
             container.start()
             result = container.wait()
-            logs = container.logs()
             stdout_content = readFromContainer(container, '/app/stdout.txt')
             stderr_content = readFromContainer(container, '/app/stderr.txt')
             output[f"test case {index+1}"] = {
@@ -69,7 +67,7 @@ def runSandbox(code_path:str, inputs:List[str]) -> dict:
                 "stdout": stdout_content, 
                 "stderr": stderr_content
             }
-            print("Successfull Execution, Output:", logs.decode())
+            print("Successfull Execution")
         except docker.errors.ContainerError as e:
             output[f"test case {index+1}"] = {
                 "status":"failed", 
@@ -78,7 +76,7 @@ def runSandbox(code_path:str, inputs:List[str]) -> dict:
                 "stderr": "Execution Failed"
             }
             print("Execution Failed!")
-            print("Exit Code:", e.exit_status)
+            print("exit Code:", e.errno)
             print("Error Message:", e.stderr.decode())
         except TimeoutError as e:
             output[f"test case {index+1}"] = {
@@ -91,7 +89,7 @@ def runSandbox(code_path:str, inputs:List[str]) -> dict:
         except Exception as e:
             output[f"test case {index+1}"] = {
                 "status":"failed", 
-                "exit_code":e.exit_status, 
+                "exit_code":e.errno, 
                 "stdout": "", 
                 "stderr": f"A new exception encountered:{e}"
             }
