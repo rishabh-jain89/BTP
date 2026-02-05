@@ -1,0 +1,10 @@
+.vscode
+Agents/__pycache__
+expected/
+__pycache__/
+Code/
+inputs/
+output/
+sandboxed_environment/__pycache__
+commands.txt
+Docker.txt
