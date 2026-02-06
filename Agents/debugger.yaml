@@ -18,6 +18,7 @@ debugger-agent:
     CONSTRAINTS:
     - Be specific: Do not use "Assuming" or "Somewhere". Use line numbers from the provided code.
     - Do not Print Anything Extra Only give the output in the given format.
+    - If there are no compilation or Runtime errors present in the code , generate a suitable one liner code for stating no errors.
 
     OUTPUT FORMAT (You can omit or add any field if required):
     Technical Breakdown: [Category]

@@ -18,6 +18,7 @@ def load_data(state: agentState):
     code_path = '/home/dic/Desktop/Rishabh/BTP_Evaluation_Lab/Code/test.c'
     input_dir = '/home/dic/Desktop/Rishabh/BTP_Evaluation_Lab/inputs'
     expected_dir = '/home/dic/Desktop/Rishabh/BTP_Evaluation_Lab/expected'
+    assignment_path = '/home/dic/Desktop/Rishabh/BTP_Evaluation_Lab/Assignment/assignment.txt'
 
     inputs = sorted([os.path.join(input_dir, f) for f in os.listdir(input_dir)])
 
@@ -26,13 +27,16 @@ def load_data(state: agentState):
         with open(os.path.join(expected_dir, file), 'r') as f:
             expected[f"Expected {index+1}"] = f.read()
 
+    with open(assignment_path, 'r') as file:
+        assignment = file.read()
+
     return {
         "student_code":code_path, 
         "test_inputs":inputs, 
         "next_node":"sandboxed_execution", 
-        "expected_outputs":expected
+        "expected_outputs":expected, 
+        "problem_statement": assignment
     }
-
 
 def sandbox_node(state:agentState):
     print("Running Sandbox Node")
@@ -85,13 +89,42 @@ def debugger_node(state:agentState):
         "next_node": "logic_agent"
     }
 
+def logic_node(state:agentState):
+    assignment = state['problem_statement']
+    with open(state['student_code'], 'r') as file:
+        code = file.read()
+    actual_output = state['execution_meta']
+    expected_output = state['expected_outputs']
+
+    with open("/home/dic/Desktop/Rishabh/BTP_Evaluation_Lab/Agents/logic.yaml", 'r') as file:
+        agent = yaml.safe_load(file)
+    
+    template = agent['logic_agent']['prompt']
+    model = agent['logic_agent']['model']
+    prompt = template.format(
+        assignment = assignment, 
+        student_code = code,
+        actual_output = actual_output,
+        expected_output = expected_output
+    )
+
+    response = ollama.generate(
+        model = model, 
+        format = 'json', 
+        prompt = prompt
+    )
+
+    state["logic_agent"] = json.loads(response['response'])
+    state["next_node"] = "quality_agent"
+
 initial_state = {
     "student_code": "", 
     "test_inputs":[], 
     "expected_outputs":{},  
     "next_node":"", 
     "execution_meta": {},
-    "feedback_history": []
+    "feedback_history": [],
+    "problem_statement": ""
 }
 
 print("Loading the data")
@@ -106,6 +139,8 @@ debugger_response = debugger_node(state) # Here the debugger node is executed
 
 state['debugger'] = json.loads(debugger_response['debugger']) # debugger response adding in state
 state['next_node'] = debugger_response['next_node']
+
+logic_node(state)
 
 json_final_state = json.dumps(state, indent=4)
 
