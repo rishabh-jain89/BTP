@@ -1,1 +1,11 @@
-Write a function to merge two sorted singly-linked lists so the resultant singly-linked list remains sorted.
+Write a C function mergeSortedLists that takes two sorted singly-linked lists and merges them into a single sorted list.
+
+Goal: The final list must be sorted in ascending order.
+
+Pointer Logic: You should try to reuse the existing nodes by changing their next pointers.
+
+Simple Marking Scheme (Total: 10 Marks)
+Criteria    Marks   What the Agent looks for
+Basic Functionality     6.  0Does the code compile and pass the provided test cases?
+Logical Approach    3.0     Did the student use a loop or recursion to compare nodes? (Reward effort even if there's a small pointer bug).
+Code Neatness   1.0     Is the code readable? (No penalty for minor formatting errors).

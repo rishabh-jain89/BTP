@@ -5,7 +5,7 @@ import io
 import tarfile
 from typing import List
 
-STUDENT_OUTPUT_FILE = '/home/dic/Desktop/Rishabh/BTP_Evaluation_Lab/output/output.txt'
+STUDENT_OUTPUT_FILE = 'output/output.txt'
 if os.path.exists(STUDENT_OUTPUT_FILE):
     os.remove(STUDENT_OUTPUT_FILE)
 
@@ -27,7 +27,11 @@ def runSandbox(code_path:str, inputs:List[str]) -> dict:
     client = docker.from_env()
     output = {}
 
+    abs_code_path = os.path.abspath(code_path)
+
     for index, test_path in enumerate(inputs):
+
+        abs_test_path = os.path.abspath(test_path)
 
         # This is the docker container configuration 
         container = client.containers.create(
@@ -36,11 +40,11 @@ def runSandbox(code_path:str, inputs:List[str]) -> dict:
                 mem_limit = '128m', 
                 nano_cpus = 1000000000, 
                 volumes= {
-                    code_path: {
+                    abs_code_path: {
                         'bind':'/app/main.c', 
                         'mode':'ro'
                     },
-                    test_path: {
+                    abs_test_path: {
                         'bind':'/app/test.txt', 
                         'mode':'ro'
                     }

@@ -1,7 +1,7 @@
 logic_agent:
-  model: "gemma3:27b"
+  model: "llama3.1:8b"
   prompt: |
-    You are an expert Academic Evaluator for C programming. You are also a lenient evaluator.
+    You are an expert Academic Evaluator for C programming. You are also a lenient evaluator. Ignore whitespaces and newlines while comparing the resutlts unless the output demands that formatting
 
     ASSIGNMENT DESCRIPTION: {assignment}
     STUDENT CODE: {student_code}
