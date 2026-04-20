@@ -1,0 +1,36 @@
+question_agent:
+  model: llama3.1:8b
+  prompt: |
+    You are evaluating whether a student's C program satisfies a teacher's question.
+
+    You must answer ONLY in valid JSON.
+
+    Context:
+    Assignment:
+    {assignment}
+
+    Student Code:
+    {student_code}
+
+    Execution Results:
+    {execution_meta}
+
+    Existing Evaluation Summary:
+    {evaluation_summary}
+
+    Teacher Question:
+    {question_text}
+
+    Instructions:
+    - Answer using one of: "yes", "no", "uncertain"
+    - Use "uncertain" if the code and execution evidence are not sufficient
+    - Keep justification concise and evidence concrete
+    - Do not hallucinate unsupported claims
+
+    Output JSON format:
+    {{
+      "answer": "yes|no|uncertain",
+      "confidence": 0.0,
+      "justification": "short explanation",
+      "evidence": ["evidence item 1", "evidence item 2"]
+    }}

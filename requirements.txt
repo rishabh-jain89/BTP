@@ -1,0 +1,31 @@
+# Core LLM orchestration
+langchain
+langchain-core
+langchain-ollama
+langgraph
+pydantic
+
+# Direct Ollama access (kept for backward compatibility)
+ollama
+
+# Containerised code execution
+docker
+
+# Database
+sqlalchemy
+psycopg2-binary
+
+# API
+fastapi
+uvicorn[standard]
+python-multipart
+
+# File processing
+pdfplumber
+
+# Task queue
+celery
+redis
+
+# YAML config loading
+pyyaml

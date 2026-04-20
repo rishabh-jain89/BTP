@@ -1,0 +1,60 @@
+===========================================================================
+      ASSIGNMENT: ADVANCED SINGLY-LINKED LIST OPERATIONS (Total: 50 Marks)
+===========================================================================
+
+PROBLEM STATEMENT:
+Implement a comprehensive library for a Singly-Linked List in C. 
+
+---------------------------------------------------------------------------
+PART 1: BASIC OPERATIONS [10 MARKS]
+---------------------------------------------------------------------------
+1.1  [1.0] Add an element at the beginning of the list.
+1.2  [1.0] Print the elements in the list (Iterative).
+1.3  [1.5] Count the number of elements in the list.
+1.4  [1.5] Remove the first element of the list.
+1.5  [2.0] Add an element at the end of the list.
+1.6  [3.0] Remove the last element of the list.
+
+---------------------------------------------------------------------------
+PART 2: POSITIONAL & KEY-BASED OPERATIONS [15 MARKS]
+---------------------------------------------------------------------------
+2.1  [2.0] Get an element from a given list position (0-indexed).
+2.2  [2.0] Set/Update an element at a given list position.
+2.3  [3.0] Add an element at a given list position.
+2.4  [3.0] Remove the element at a given list position.
+2.5  [2.5] Add data after the first occurrence of a given key value.
+2.6  [2.5] Remove the first occurrence of a given data value.
+
+---------------------------------------------------------------------------
+PART 3: ADVANCED LOGIC & SORTING [15 MARKS]
+---------------------------------------------------------------------------
+3.1  [4.0] Reverse the elements in the list (Iterative).
+3.2  [5.0] Insert an element into a sorted list (Maintain sorted order).
+3.3  [6.0] Sort the elements in the list (Algorithm of your choice).
+
+---------------------------------------------------------------------------
+PART 4: RECURSIVE OPERATIONS [10 MARKS]
+---------------------------------------------------------------------------
+4.1  [2.0] Use recursion to print the list.
+4.2  [3.0] Use recursion to print the list in reverse order.
+4.3  [5.0] Use recursion to reverse the physical structure of the list.
+
+===========================================================================
+                MARKING SCHEME (For Automated Evaluation)
+===========================================================================
+
+1. FUNCTIONAL CORRECTNESS [60% of Marks]
+   - Passed Test Case (Standard input): 100% of function marks.
+   - Passed Test Case (Edge case - Empty List): 100% of function marks.
+   - Passed Test Case (Edge case - Single Node): 100% of function marks.
+
+2. LOGICAL INTEGRITY [30% of Marks]
+   - Correct Pointer Handling: No segmentation faults or dangling pointers.
+   - Memory Management: Using free() correctly in all removal functions.
+   - Loop Termination: No infinite loops in traversal.
+
+3. CODE QUALITY [10% of Marks]
+   - Readability: Consistent indentation and clear variable names.
+   - Time Complexity: Using O(1) or O(n) as appropriate for the task.
+
+===========================================================================

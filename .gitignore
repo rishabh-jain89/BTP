@@ -1,10 +1,19 @@
 .vscode
-Agents/__pycache__
-expected/
 __pycache__/
+*.pyc
+
+# Runtime-generated directories
 Code/
 inputs/
+expected/
 output/
+data/tmp_jobs/
+data/temp_jplag/
+data/jplag_reports/
+
+# Sandbox
 sandboxed_environment/__pycache__
+
+# Misc
 commands.txt
 Docker.txt

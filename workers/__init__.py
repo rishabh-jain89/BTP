@@ -1,0 +1,2 @@
+from workers.evaluation_tasks import process_evaluation_job
+from workers.plagiarism_tasks import process_plagiarism_job
