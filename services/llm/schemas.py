@@ -31,7 +31,7 @@ class GraderSchema(BaseModel):
     final_score: Optional[float] = Field(None, description="The overall final score. Must NOT exceed the total_marks parameter.")
     breakdown: dict[str, float] = Field(
         default_factory=dict,
-        description="Must contain exactly the keys: 'functionality', 'logic', 'efficiency', 'quality'. The sum of these values MUST exactly equal the final_score."
+        description="Must contain exactly the keys: 'functionality', 'logic', 'quality'. The sum of these values MUST exactly equal the final_score."
     )
     penalties_applied: list[str] = Field(default_factory=list)
     final_verdict: str

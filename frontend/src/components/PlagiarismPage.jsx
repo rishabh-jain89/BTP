@@ -183,8 +183,8 @@ function AllStudentsPlagiarism() {
                                                         r.max_similarity_score >= 70 ? 'fail' :
                                                         r.max_similarity_score >= 40 ? 'pending' : 'pass'
                                                     }`}>
-                                                        {r.max_similarity_score >= 70 ? '🚨 Flagged' :
-                                                         r.max_similarity_score >= 40 ? '⚠ Warning' : '✓ Clean'}
+                                                        {r.max_similarity_score >= 70 ? 'Flagged' :
+                                                         r.max_similarity_score >= 40 ? 'Warning' : 'Clean'}
                                                     </span>
                                                 </td>
                                             </tr>

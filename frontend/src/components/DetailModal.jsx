@@ -176,6 +176,145 @@ function QuestionCard({ item, showAskedAt = true }) {
     );
 }
 
+/* ─── Lightweight C syntax highlighter ──────────────────────────────────────── */
+
+const C_KEYWORDS = new Set([
+    'auto','break','case','char','const','continue','default','do','double',
+    'else','enum','extern','float','for','goto','if','inline','int','long',
+    'register','restrict','return','short','signed','sizeof','static','struct',
+    'switch','typedef','union','unsigned','void','volatile','while',
+    '_Bool','_Complex','_Imaginary',
+]);
+
+const C_TYPES = new Set([
+    'int','char','float','double','void','long','short','unsigned','signed',
+    'size_t','FILE','NULL',
+]);
+
+function highlightCLine(line) {
+    const tokens = [];
+    let i = 0;
+    const src = line;
+
+    while (i < src.length) {
+        // Preprocessor directives
+        if (src[i] === '#' && src.slice(0, i).trim() === '') {
+            tokens.push(<span key={i} className="hl-preproc">{src.slice(i)}</span>);
+            break;
+        }
+
+        // Single-line comments
+        if (src[i] === '/' && src[i + 1] === '/') {
+            tokens.push(<span key={i} className="hl-comment">{src.slice(i)}</span>);
+            break;
+        }
+
+        // String literals
+        if (src[i] === '"') {
+            let j = i + 1;
+            while (j < src.length && src[j] !== '"') { if (src[j] === '\\') j++; j++; }
+            const str = src.slice(i, j + 1);
+            tokens.push(<span key={i} className="hl-string">{str}</span>);
+            i = j + 1;
+            continue;
+        }
+
+        // Char literals
+        if (src[i] === "'") {
+            let j = i + 1;
+            while (j < src.length && src[j] !== "'") { if (src[j] === '\\') j++; j++; }
+            const str = src.slice(i, j + 1);
+            tokens.push(<span key={i} className="hl-string">{str}</span>);
+            i = j + 1;
+            continue;
+        }
+
+        // Numbers
+        if (/[0-9]/.test(src[i]) && (i === 0 || /[\s(,=+\-*/<>!&|^~%]/.test(src[i - 1]))) {
+            let j = i;
+            while (j < src.length && /[0-9a-fA-FxX.uUlL]/.test(src[j])) j++;
+            tokens.push(<span key={i} className="hl-number">{src.slice(i, j)}</span>);
+            i = j;
+            continue;
+        }
+
+        // Identifiers / keywords
+        if (/[a-zA-Z_]/.test(src[i])) {
+            let j = i;
+            while (j < src.length && /[a-zA-Z0-9_]/.test(src[j])) j++;
+            const word = src.slice(i, j);
+
+            // Check if followed by '(' → function call
+            const restTrimmed = src.slice(j).trimStart();
+
+            if (C_KEYWORDS.has(word)) {
+                tokens.push(<span key={i} className="hl-keyword">{word}</span>);
+            } else if (C_TYPES.has(word)) {
+                tokens.push(<span key={i} className="hl-type">{word}</span>);
+            } else if (restTrimmed.startsWith('(')) {
+                tokens.push(<span key={i} className="hl-function">{word}</span>);
+            } else {
+                tokens.push(<span key={i}>{word}</span>);
+            }
+            i = j;
+            continue;
+        }
+
+        // Operators
+        if (/[+\-*/%=<>!&|^~?:]/.test(src[i])) {
+            let j = i;
+            while (j < src.length && /[+\-*/%=<>!&|^~?:]/.test(src[j])) j++;
+            tokens.push(<span key={i} className="hl-operator">{src.slice(i, j)}</span>);
+            i = j;
+            continue;
+        }
+
+        // Brackets
+        if (/[{}()\[\];,.]/.test(src[i])) {
+            tokens.push(<span key={i} className="hl-bracket">{src[i]}</span>);
+            i++;
+            continue;
+        }
+
+        // Plain whitespace / other
+        tokens.push(<span key={i}>{src[i]}</span>);
+        i++;
+    }
+
+    return tokens;
+}
+
+function CodeViewer({ code }) {
+    const lines = code.split('\n');
+    // Remove trailing empty line if present
+    if (lines.length > 1 && lines[lines.length - 1].trim() === '') lines.pop();
+
+    return (
+        <div className="code-viewer">
+            <div className="code-viewer-header">
+                <span className="code-viewer-lang">C</span>
+                <span className="code-viewer-meta">{lines.length} lines</span>
+            </div>
+            <div className="code-viewer-body">
+                <table className="code-viewer-table">
+                    <tbody>
+                        {lines.map((line, i) => (
+                            <tr key={i} className={i % 2 === 0 ? 'code-line-even' : 'code-line-odd'}>
+                                <td className="code-line-num">{i + 1}</td>
+                                <td className="code-line-content">
+                                    <pre>{highlightCLine(line)}{line === '' ? '\n' : ''}</pre>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+}
+
+/* ─── End code viewer ───────────────────────────────────────────────────────── */
+
 export default function DetailModal({ submissionId, onClose }) {
     const [detail, setDetail] = useState(null);
     const [tab, setTab] = useState('Code & Output');
@@ -276,13 +415,7 @@ export default function DetailModal({ submissionId, onClose }) {
                             <div className="report-section">
                                 <h4>Student Code</h4>
                                 {detail.code ? (
-                                    <div className="code-block-wrapper">
-                                        <div className="code-block-header">
-                                            <span className="code-block-lang">C</span>
-                                            <span className="code-block-lines">{detail.code.split('\n').length} lines</span>
-                                        </div>
-                                        <pre className="code-block"><code>{detail.code}</code></pre>
-                                    </div>
+                                    <CodeViewer code={detail.code} />
                                 ) : (
                                     <div className="report-value" style={{ color: 'var(--text-muted)' }}>No code available</div>
                                 )}

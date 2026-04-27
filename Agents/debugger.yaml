@@ -1,5 +1,5 @@
 debugger-agent:
-  model: "qwen3:8b"
+  model: "gemma3:latest"
   prompt: |
     You are an expert C Debugger. Your goal is to provide a PINPOINT technical breakdown.Analyze the code deeply and while generating the response keep the code in loop for reference.
 

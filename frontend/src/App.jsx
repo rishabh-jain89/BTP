@@ -8,12 +8,12 @@ import StudentsPage from './components/StudentsPage';
 import PlagiarismPage from './components/PlagiarismPage';
 
 const NAV = [
-  { id: 'dashboard', label: 'Dashboard', icon: '/icons/dashboard.png' },
-  { id: 'assignments', label: 'Assignments', icon: '/icons/assignments.png' },
-  { id: 'students', label: 'Students', icon: '/icons/students.png' },
-  { id: 'submissions', label: 'Submissions', icon: '/icons/submissions.png' },
-  { id: 'plagiarism', label: 'Plagiarism', icon: '/icons/plagiarism.png' },
-  { id: 'upload', label: 'Upload & Eval', icon: '/icons/upload.png' },
+  { id: 'dashboard', label: 'Dashboard', icon: '/icons/dashboard.svg' },
+  { id: 'assignments', label: 'Assignments', icon: '/icons/assignments.svg' },
+  { id: 'students', label: 'Students', icon: '/icons/students.svg' },
+  { id: 'submissions', label: 'Submissions', icon: '/icons/submissions.svg' },
+  { id: 'plagiarism', label: 'Plagiarism', icon: '/icons/plagiarism.svg' },
+  { id: 'upload', label: 'Upload & Eval', icon: '/icons/upload.svg' },
 ];
 
 export default function App() {

@@ -194,7 +194,7 @@ function CSVUploadModal({ onClose, onDone, showToast }) {
 
                     {result && (
                         <div className="status-banner success" style={{ marginTop: 16 }}>
-                            ✓ Processed {result.total_processed} rows — {result.created} created, {result.updated} updated.
+                            Processed {result.total_processed} rows — {result.created} created, {result.updated} updated.
                         </div>
                     )}
 

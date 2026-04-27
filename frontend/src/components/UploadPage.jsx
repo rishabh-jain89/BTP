@@ -257,12 +257,12 @@ export default function UploadPage() {
                 {/* Status banner */}
                 {status === 'success' && (
                     <div className="status-banner success">
-                        ✓ {message}
+                        {message}
                     </div>
                 )}
                 {status === 'error' && (
                     <div className="status-banner error">
-                        ✗ {message}
+                        {message}
                     </div>
                 )}
 

@@ -192,7 +192,8 @@ async def evaluate(
     job = create_evaluation_job(db, sub_id)
     task = process_evaluation_job.apply_async(
         args=[job.id],
-        queue="evaluation_queue"
+        queue="evaluation_queue",
+        countdown=1
     )
     set_job_celery_task_id(db, job.id, task.id)
 
@@ -371,7 +372,8 @@ async def upload_bulk(
         job = create_evaluation_job(db, sid)
         task = process_evaluation_job.apply_async(
             args=[job.id],
-            queue="evaluation_queue"
+            queue="evaluation_queue",
+            countdown=1
         )
         set_job_celery_task_id(db, job.id, task.id)
         job_ids.append(job.id)
@@ -573,7 +575,8 @@ async def evaluate_individual(
     job = create_evaluation_job(db, submission_id)
     task = process_evaluation_job.apply_async(
         args=[job.id],
-        queue="evaluation_queue"
+        queue="evaluation_queue",
+        countdown=1
     )
     set_job_celery_task_id(db, job.id, task.id)
 
@@ -608,6 +611,7 @@ async def re_evaluate_assignment(
         task = process_evaluation_job.apply_async(
             args=[job.id],
             queue="evaluation_queue",
+            countdown=1
         )
         set_job_celery_task_id(db, job.id, task.id)
         queued.append({"submission_id": sub["id"], "job_id": job.id})

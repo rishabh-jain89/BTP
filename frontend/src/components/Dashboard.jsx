@@ -82,28 +82,28 @@ export default function Dashboard() {
 
   const penaltyData = useMemo(() => {
     return (assignmentAnalytics?.common_penalties || []).map(([name, count]) => ({
-      name: String(name).slice(0, 32),
+      name: String(name),
       count,
     }));
   }, [assignmentAnalytics]);
 
   const debuggerMistakes = useMemo(() => {
     return (assignmentAnalytics?.debugger_mistakes || []).map(([name, count]) => ({
-      name: String(name).slice(0, 32),
+      name: String(name),
       count,
     }));
   }, [assignmentAnalytics]);
 
   const logicMistakes = useMemo(() => {
     return (assignmentAnalytics?.logic_mistakes || []).map(([name, count]) => ({
-      name: String(name).slice(0, 32),
+      name: String(name),
       count,
     }));
   }, [assignmentAnalytics]);
 
   const qualityMistakes = useMemo(() => {
     return (assignmentAnalytics?.quality_mistakes || []).map(([name, count]) => ({
-      name: String(name).slice(0, 32),
+      name: String(name),
       count,
     }));
   }, [assignmentAnalytics]);
@@ -214,11 +214,11 @@ export default function Dashboard() {
                 {penaltyData.length === 0 ? (
                   <EmptyState text="No penalties recorded for this assignment" />
                 ) : (
-                  <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={penaltyData} layout="vertical" barSize={16}>
+                  <ResponsiveContainer width="100%" height={280}>
+                    <BarChart data={penaltyData} layout="vertical" barSize={18}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" horizontal={false} />
                       <XAxis type="number" tick={{ fill: '#7986a3', fontSize: 12 }} axisLine={false} tickLine={false} allowDecimals={false} />
-                      <YAxis type="category" dataKey="name" tick={{ fill: '#7986a3', fontSize: 11 }} width={170} axisLine={false} tickLine={false} />
+                      <YAxis type="category" dataKey="name" tick={{ fill: '#c9d1d9', fontSize: 12, fontWeight: 500 }} width={200} axisLine={false} tickLine={false} />
                       <Tooltip />
                       <Bar dataKey="count" fill="#ff6b6b" radius={[0, 6, 6, 0]} />
                     </BarChart>
@@ -232,11 +232,11 @@ export default function Dashboard() {
                 {debuggerMistakes.length === 0 ? (
                   <EmptyState text="No debugger-classified mistakes yet" />
                 ) : (
-                  <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={debuggerMistakes} layout="vertical" barSize={16}>
+                  <ResponsiveContainer width="100%" height={280}>
+                    <BarChart data={debuggerMistakes} layout="vertical" barSize={18}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" horizontal={false} />
                       <XAxis type="number" tick={{ fill: '#7986a3', fontSize: 12 }} axisLine={false} tickLine={false} allowDecimals={false} />
-                      <YAxis type="category" dataKey="name" tick={{ fill: '#7986a3', fontSize: 11 }} width={170} axisLine={false} tickLine={false} />
+                      <YAxis type="category" dataKey="name" tick={{ fill: '#c9d1d9', fontSize: 12, fontWeight: 500 }} width={200} axisLine={false} tickLine={false} />
                       <Tooltip />
                       <Bar dataKey="count" fill="#ff9f43" radius={[0, 6, 6, 0]} />
                     </BarChart>
@@ -248,11 +248,11 @@ export default function Dashboard() {
                 {logicMistakes.length === 0 ? (
                   <EmptyState text="No logic-classified mistakes yet" />
                 ) : (
-                  <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={logicMistakes} layout="vertical" barSize={16}>
+                  <ResponsiveContainer width="100%" height={280}>
+                    <BarChart data={logicMistakes} layout="vertical" barSize={18}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" horizontal={false} />
                       <XAxis type="number" tick={{ fill: '#7986a3', fontSize: 12 }} axisLine={false} tickLine={false} allowDecimals={false} />
-                      <YAxis type="category" dataKey="name" tick={{ fill: '#7986a3', fontSize: 11 }} width={170} axisLine={false} tickLine={false} />
+                      <YAxis type="category" dataKey="name" tick={{ fill: '#c9d1d9', fontSize: 12, fontWeight: 500 }} width={200} axisLine={false} tickLine={false} />
                       <Tooltip />
                       <Bar dataKey="count" fill="#6c63ff" radius={[0, 6, 6, 0]} />
                     </BarChart>
@@ -266,11 +266,11 @@ export default function Dashboard() {
                 {qualityMistakes.length === 0 ? (
                   <EmptyState text="No quality-classified mistakes yet" />
                 ) : (
-                  <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={qualityMistakes} layout="vertical" barSize={16}>
+                  <ResponsiveContainer width="100%" height={280}>
+                    <BarChart data={qualityMistakes} layout="vertical" barSize={18}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" horizontal={false} />
                       <XAxis type="number" tick={{ fill: '#7986a3', fontSize: 12 }} axisLine={false} tickLine={false} allowDecimals={false} />
-                      <YAxis type="category" dataKey="name" tick={{ fill: '#7986a3', fontSize: 11 }} width={170} axisLine={false} tickLine={false} />
+                      <YAxis type="category" dataKey="name" tick={{ fill: '#c9d1d9', fontSize: 12, fontWeight: 500 }} width={200} axisLine={false} tickLine={false} />
                       <Tooltip />
                       <Bar dataKey="count" fill="#00d4aa" radius={[0, 6, 6, 0]} />
                     </BarChart>

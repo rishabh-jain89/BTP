@@ -16,7 +16,6 @@ import {
 } from '../api';
 import DetailModal from './DetailModal';
 
-/* ═══════════════════════════════  MAIN PAGE  ═══════════════════════════════ */
 
 export default function AssignmentsPage() {
     const [assignments, setAssignments] = useState([]);
@@ -63,7 +62,6 @@ export default function AssignmentsPage() {
                 <div className="loading">Loading assignments…</div>
             ) : assignments.length === 0 ? (
                 <div className="empty-state">
-                    <div className="empty-icon">📋</div>
                     <h3>No assignments yet</h3>
                     <p>Create your first assignment to get started.</p>
                 </div>
@@ -246,7 +244,7 @@ function CreateAssignmentModal({ onClose, onCreated }) {
                         disabled={!isValid || saving}
                         style={{ width: '100%', justifyContent: 'center' }}
                     >
-                        {saving ? <><span className="spinner" /> Creating…</> : '✓ Create Assignment'}
+                        {saving ? <><span className="spinner" /> Creating…</> : 'Create Assignment'}
                     </button>
                 </form>
             </div>
@@ -448,12 +446,12 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
                                 {t === 'details'
                                     ? 'Details'
                                     : t === 'questions'
-                                    ? 'Questions'
-                                    : t === 'submissions'
-                                    ? 'Submissions'
-                                    : t === 'upload'
-                                    ? 'Bulk Upload'
-                                    : 'Plagiarism'}
+                                        ? 'Questions'
+                                        : t === 'submissions'
+                                            ? 'Submissions'
+                                            : t === 'upload'
+                                                ? 'Bulk Upload'
+                                                : 'Plagiarism'}
                             </button>
                         ))}
                     </div>
@@ -583,19 +581,19 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
                                                         rawStatus === 'evaluated'
                                                             ? (s.final_score >= 5 ? 'pass' : 'fail')
                                                             : rawStatus === 'failed'
-                                                            ? 'fail'
-                                                            : 'pending';
+                                                                ? 'fail'
+                                                                : 'pending';
 
                                                     const badgeLabel =
                                                         rawStatus === 'evaluated'
                                                             ? (s.final_score >= 5 ? 'Pass' : 'Fail')
                                                             : rawStatus === 'queued'
-                                                            ? 'Queued'
-                                                            : rawStatus === 'running'
-                                                            ? 'Running'
-                                                            : rawStatus === 'failed'
-                                                            ? 'Failed'
-                                                            : 'Pending';
+                                                                ? 'Queued'
+                                                                : rawStatus === 'running'
+                                                                    ? 'Running'
+                                                                    : rawStatus === 'failed'
+                                                                        ? 'Failed'
+                                                                        : 'Pending';
 
                                                     return (
                                                         <tr key={s.id}>
@@ -636,10 +634,10 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
                                                                         {evalStatus[s.id] === 'queued'
                                                                             ? '✓'
                                                                             : evalStatus[s.id] === 'queuing'
-                                                                            ? '…'
-                                                                            : rawStatus === 'evaluated'
-                                                                            ? '🔄'
-                                                                            : '⚡'}
+                                                                                ? '…'
+                                                                                : rawStatus === 'evaluated'
+                                                                                    ? '🔄'
+                                                                                    : '⚡'}
                                                                     </button>
                                                                     <button
                                                                         className="action-btn tiny danger"
@@ -664,14 +662,8 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
                             <div className="bulk-upload-section">
                                 <div className="bulk-upload-info">
                                     <h4>Bulk Upload Student Submissions</h4>
-                                    <p>Upload a <code>.zip</code> file containing student code files. Expected format:</p>
-                                    <div className="code-block">
-                                        submissions.zip<br />
-                                        ├── 2021001.c<br />
-                                        ├── 2021002.c<br />
-                                        └── 2021003.c
-                                    </div>
-                                    <p>Each <code>.c</code> filename (without extension) is the student's roll number.</p>
+                                    <p>Upload a <code>.zip</code> file containing student code files.</p>
+                                    
                                 </div>
 
                                 <label className={`file-zone ${zipFile ? 'has-file' : ''}`}>
@@ -681,7 +673,6 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
                                         style={{ display: 'none' }}
                                         onChange={e => e.target.files[0] && setZipFile(e.target.files[0])}
                                     />
-                                    <div className="zone-icon">{zipFile ? '✓' : '↑'}</div>
                                     <div className="zone-label">ZIP File</div>
                                     {zipFile
                                         ? <div className="zone-file">{zipFile.name}</div>
@@ -692,7 +683,7 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
                                 {uploadResult && (
                                     <div className={`status-banner ${uploadResult.errors?.length && !uploadResult.submissions_created ? 'error' : 'success'}`}>
                                         {uploadResult.submissions_created != null
-                                            ? `✓ ${uploadResult.submissions_created} submissions created from ${uploadResult.total_extracted} files.`
+                                            ? `${uploadResult.submissions_created} submissions created from ${uploadResult.total_extracted} files.`
                                             : ''}
                                         {uploadResult.errors?.length > 0 && (
                                             <div style={{ marginTop: 6, fontSize: '0.82rem' }}>
@@ -708,7 +699,7 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
                                     disabled={!zipFile || uploading}
                                     style={{ width: '100%', justifyContent: 'center', marginTop: 16 }}
                                 >
-                                    {uploading ? <><span className="spinner" /> Uploading…</> : '📦 Upload & Process ZIP'}
+                                    {uploading ? <><span className="spinner" /> Uploading…</> : ' Upload & Process ZIP'}
                                 </button>
                             </div>
                         )}
@@ -746,10 +737,9 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
                                             </div>
                                             <div className="plag-stat-card">
                                                 <div className="plag-stat-label">Highest Similarity</div>
-                                                <div className={`plag-stat-value ${
-                                                    plagiarismData.results[0]?.max_similarity_score >= 70 ? 'flagged' :
-                                                    plagiarismData.results[0]?.max_similarity_score >= 40 ? 'warning' : 'clean'
-                                                }`}>
+                                                <div className={`plag-stat-value ${plagiarismData.results[0]?.max_similarity_score >= 70 ? 'flagged' :
+                                                        plagiarismData.results[0]?.max_similarity_score >= 40 ? 'warning' : 'clean'
+                                                    }`}>
                                                     {plagiarismData.results[0]?.max_similarity_score?.toFixed(1)}%
                                                 </div>
                                             </div>
@@ -791,29 +781,26 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
                                                                 <div className="similarity-bar-wrap">
                                                                     <div className="similarity-bar">
                                                                         <div
-                                                                            className={`similarity-bar-fill ${
-                                                                                r.max_similarity_score >= 70 ? 'flagged' :
-                                                                                r.max_similarity_score >= 40 ? 'warning' : 'clean'
-                                                                            }`}
+                                                                            className={`similarity-bar-fill ${r.max_similarity_score >= 70 ? 'flagged' :
+                                                                                    r.max_similarity_score >= 40 ? 'warning' : 'clean'
+                                                                                }`}
                                                                             style={{ width: `${Math.min(r.max_similarity_score, 100)}%` }}
                                                                         />
                                                                     </div>
-                                                                    <span className={`similarity-value ${
-                                                                        r.max_similarity_score >= 70 ? 'flagged' :
-                                                                        r.max_similarity_score >= 40 ? 'warning' : 'clean'
-                                                                    }`}>
+                                                                    <span className={`similarity-value ${r.max_similarity_score >= 70 ? 'flagged' :
+                                                                            r.max_similarity_score >= 40 ? 'warning' : 'clean'
+                                                                        }`}>
                                                                         {r.max_similarity_score.toFixed(1)}%
                                                                     </span>
                                                                 </div>
                                                             </td>
                                                             <td>{r.most_similar_to || '—'}</td>
                                                             <td>
-                                                                <span className={`badge ${
-                                                                    r.max_similarity_score >= 70 ? 'fail' :
-                                                                    r.max_similarity_score >= 40 ? 'pending' : 'pass'
-                                                                }`}>
-                                                                    {r.max_similarity_score >= 70 ? '🚨 Flagged' :
-                                                                     r.max_similarity_score >= 40 ? '⚠ Warning' : '✓ Clean'}
+                                                                <span className={`badge ${r.max_similarity_score >= 70 ? 'fail' :
+                                                                        r.max_similarity_score >= 40 ? 'pending' : 'pass'
+                                                                    }`}>
+                                                                    {r.max_similarity_score >= 70 ? 'Flagged' :
+                                                                        r.max_similarity_score >= 40 ? 'Warning' : 'Clean'}
                                                                 </span>
                                                             </td>
                                                         </tr>

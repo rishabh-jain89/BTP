@@ -1,5 +1,5 @@
 question_agent:
-  model: qwen3:8b
+  model: gemma3:latest
   prompt: |
     You are evaluating whether a student's C program satisfies a teacher's question.
 

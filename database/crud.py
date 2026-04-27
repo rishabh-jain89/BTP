@@ -404,6 +404,72 @@ def delete_plagiarism_results(db: Session, assignment_id: int) -> int:
     db.commit()
     return deleted_count
 
+def _normalize_issue(raw: str) -> str:
+    """Map a verbose LLM-generated issue string to a short standard category.
+
+    The LLM produces unique descriptions for every submission. This function
+    normalizes them into ~20 canonical buckets so the analytics charts show
+    aggregated, readable categories instead of unique one-off strings.
+    """
+    s = raw.lower().strip()
+
+    # Memory
+    if any(kw in s for kw in ("memory leak", "malloc", "free(", "not freed", "dealloc")):
+        return "Memory Leak"
+    if any(kw in s for kw in ("buffer overflow", "out of bounds", "array bounds", "overflow")):
+        return "Buffer Overflow"
+    if any(kw in s for kw in ("null pointer", "null dereference", "segfault", "segmentation")):
+        return "Null Pointer"
+    if any(kw in s for kw in ("uninitialized", "uninitialised")):
+        return "Uninitialized Variable"
+
+    # Input / Output
+    if any(kw in s for kw in ("scanf", "input validation", "input handling", "user input")):
+        return "Unsafe Input (scanf)"
+    if any(kw in s for kw in ("hardcod", "hard-cod", "hard cod")):
+        return "Hardcoded Values"
+    if any(kw in s for kw in ("edge case", "boundary", "corner case")):
+        return "Missing Edge Cases"
+    if any(kw in s for kw in ("error handling", "error check", "return value check")):
+        return "Missing Error Handling"
+
+    # Logic
+    if any(kw in s for kw in ("infinite loop", "infinite recursion")):
+        return "Infinite Loop"
+    if any(kw in s for kw in ("off-by-one", "off by one", "fencepost")):
+        return "Off-by-One Error"
+    if any(kw in s for kw in ("wrong output", "incorrect output", "output mismatch")):
+        return "Wrong Output"
+    if any(kw in s for kw in ("logic error", "logical error", "incorrect logic")):
+        return "Logic Error"
+
+    # Code Quality
+    if any(kw in s for kw in ("naming", "variable name", "function name", "readability")):
+        return "Poor Naming"
+    if any(kw in s for kw in ("comment", "documentation", "doc")):
+        return "Missing Comments"
+    if any(kw in s for kw in ("magic number",)):
+        return "Magic Numbers"
+    if any(kw in s for kw in ("indentation", "formatting", "whitespace", "style")):
+        return "Formatting Issues"
+    if any(kw in s for kw in ("modular", "function decomposition", "code structure")):
+        return "Poor Structure"
+
+    # Compilation
+    if any(kw in s for kw in ("compilation", "compile error", "syntax error", "won't compile")):
+        return "Compilation Error"
+    if any(kw in s for kw in ("timeout", "time limit", "tle")):
+        return "Timeout"
+    if any(kw in s for kw in ("runtime error", "crash", "abort")):
+        return "Runtime Error"
+
+    # Fallback: take just the first 24 chars
+    cleaned = raw.strip()
+    if len(cleaned) > 24:
+        cleaned = cleaned[:24].rstrip() + "…"
+    return cleaned
+
+
 def get_assignment_analytics(db: Session, assignment_id: int) -> dict:
     assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
     if not assignment:
@@ -453,24 +519,28 @@ def get_assignment_analytics(db: Session, assignment_id: int) -> dict:
 
         if ev.penalties_applied:
             for penalty in ev.penalties_applied:
-                penalty_counts[penalty] = penalty_counts.get(penalty, 0) + 1
+                label = _normalize_issue(penalty)
+                penalty_counts[label] = penalty_counts.get(label, 0) + 1
 
         if isinstance(ev.debugger_report, dict):
             err = ev.debugger_report.get("error_type") or ev.debugger_report.get("category")
             if err:
-                debugger_counts[err] = debugger_counts.get(err, 0) + 1
+                label = _normalize_issue(str(err))
+                debugger_counts[label] = debugger_counts.get(label, 0) + 1
 
         if isinstance(ev.logic_report, dict):
             issues = ev.logic_report.get("issues", [])
             if isinstance(issues, list):
                 for issue in issues:
-                    logic_issue_counts[issue] = logic_issue_counts.get(issue, 0) + 1
+                    label = _normalize_issue(str(issue))
+                    logic_issue_counts[label] = logic_issue_counts.get(label, 0) + 1
 
         if isinstance(ev.quality_report, dict):
             issues = ev.quality_report.get("issues", [])
             if isinstance(issues, list):
                 for issue in issues:
-                    quality_issue_counts[issue] = quality_issue_counts.get(issue, 0) + 1
+                    label = _normalize_issue(str(issue))
+                    quality_issue_counts[label] = quality_issue_counts.get(label, 0) + 1
 
     return {
         "assignment_id": assignment.id,

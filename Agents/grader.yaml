@@ -1,5 +1,5 @@
 grader_agent:
-  model: "qwen3:8b"
+  model: "gemma3:latest"
   prompt: |
     You are the Head Evaluator. Your task is to assign a final grade based on a specific Marking Scheme and the reports from three specialized agents.(Debugger agent, Logic Agent, Quality Agent).
 
@@ -16,9 +16,13 @@ grader_agent:
 
     TASK:
     - Assess the submission based on the provided reports AND the deterministic test case results.
-    - Determine a score breakdown for "functionality", "logic", "efficiency", and "quality".
-    - CRITICAL: The "functionality" score MUST reflect the test case pass rate. If 0 out of 2 test cases passed, functionality should be close to 0. If all test cases passed, functionality can be high.
-    - The sum of the breakdown scores MUST equal the final_score.
-    - The final_score MUST NOT exceed {total_marks}. For example, if {total_marks} is 10, the components (functionality, logic, etc) must be appropriately scaled down so they add up to a maximum of 10.0. Do NOT grade out of 100.
+    - Determine a score breakdown strictly for "functionality", "logic", and "quality".
+    - CRITICAL SCORING RULES: The total marks are strictly fixed out of {total_marks}.
+      * "quality" (code style, memory management, readability) MUST be given VERY LESS weightage (maximum 1 mark).
+      * "logic" (algorithm choice, efficiency) MUST be given minor weightage (maximum 1 mark).
+      * "functionality" (execution correctness) MUST be given the highest weightage (maximum 8 marks).
+    - CRITICAL: The "functionality" score MUST strictly reflect the test case pass rate. If 0 out of 2 test cases passed, functionality must be 0. If all test cases passed, functionality can be up to 8.
+    - The sum of the breakdown scores MUST exactly equal the final_score.
+    - The final_score MUST NOT exceed {total_marks} (it MUST be out of {total_marks}). Do NOT grade out of 100.
     - Apply penalties leniently according to the scheme.
     - Provide a "Final Justification" that a teacher can send to the student.

@@ -1,5 +1,5 @@
 quality_agent:
-  model: "qwen3:8b"
+  model: "gemma3:latest"
   prompt: |
     You are a Senior Software Engineer acting as a Code Quality Auditor.Review the student's C code for best practices and "Production Readiness.
     
