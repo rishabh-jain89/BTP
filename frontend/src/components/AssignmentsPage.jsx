@@ -8,6 +8,7 @@ import {
     deleteSubmission,
     fetchAssignmentSubmissions,
     triggerEvaluation,
+    reEvaluateAssignment,
     triggerPlagiarismCheck,
     fetchPlagiarismResults,
     fetchAssignmentQuestions,
@@ -267,6 +268,7 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
     const [selectedSubmission, setSelectedSubmission] = useState(null);
     const [plagiarismData, setPlagiarismData] = useState(null);
     const [plagiarismRunning, setPlagiarismRunning] = useState(false);
+    const [reEvalRunning, setReEvalRunning] = useState(false);
 
     const [questions, setQuestions] = useState([]);
     const [questionsLoading, setQuestionsLoading] = useState(false);
@@ -380,6 +382,19 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
             onRefresh();
         } catch (err) {
             alert(err.message);
+        }
+    };
+
+    const handleReEvaluateAll = async () => {
+        if (!confirm('Re-evaluate ALL submissions for this assignment? This will queue fresh evaluation jobs for every submission.')) return;
+        setReEvalRunning(true);
+        try {
+            await reEvaluateAssignment(assignmentId);
+            await loadSubmissions();
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setReEvalRunning(false);
         }
     };
 
@@ -537,9 +552,19 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
                                     <div className="table-card">
                                         <div className="table-header">
                                             <h3>Student Submissions</h3>
-                                            <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                                                {submissions.total} total
-                                            </span>
+                                            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                                                <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                                                    {submissions.total} total
+                                                </span>
+                                                <button
+                                                    className={`action-btn small primary ${reEvalRunning ? 'loading' : ''}`}
+                                                    onClick={handleReEvaluateAll}
+                                                    disabled={reEvalRunning || !submissions?.submissions?.length}
+                                                    title="Re-evaluate all submissions"
+                                                >
+                                                    {reEvalRunning ? <><span className="spinner" /> Re-evaluating…</> : '🔄 Re-evaluate All'}
+                                                </button>
+                                            </div>
                                         </div>
                                         <table>
                                             <thead>
@@ -599,23 +624,23 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
                                                                     >
                                                                         👁
                                                                     </button>
-                                                                    {(rawStatus === 'pending' || rawStatus === 'failed') && (
-                                                                        <button
-                                                                            className={`action-btn tiny eval ${evalStatus[s.id] === 'queuing' ? 'loading' : ''}`}
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                handleTriggerEval(s.id);
-                                                                            }}
-                                                                            disabled={evalStatus[s.id] === 'queuing' || evalStatus[s.id] === 'queued'}
-                                                                            title="Trigger evaluation"
-                                                                        >
-                                                                            {evalStatus[s.id] === 'queued'
-                                                                                ? '✓'
-                                                                                : evalStatus[s.id] === 'queuing'
-                                                                                ? '…'
-                                                                                : '⚡'}
-                                                                        </button>
-                                                                    )}
+                                                                    <button
+                                                                        className={`action-btn tiny eval ${evalStatus[s.id] === 'queuing' ? 'loading' : ''}`}
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleTriggerEval(s.id);
+                                                                        }}
+                                                                        disabled={evalStatus[s.id] === 'queuing' || evalStatus[s.id] === 'queued'}
+                                                                        title={rawStatus === 'evaluated' ? 'Re-evaluate' : 'Trigger evaluation'}
+                                                                    >
+                                                                        {evalStatus[s.id] === 'queued'
+                                                                            ? '✓'
+                                                                            : evalStatus[s.id] === 'queuing'
+                                                                            ? '…'
+                                                                            : rawStatus === 'evaluated'
+                                                                            ? '🔄'
+                                                                            : '⚡'}
+                                                                    </button>
                                                                     <button
                                                                         className="action-btn tiny danger"
                                                                         onClick={(e) => handleDeleteSubmission(s.id, e)}
@@ -799,7 +824,6 @@ function AssignmentDetailModal({ assignmentId, onClose, onRefresh }) {
                                     </>
                                 ) : !plagiarismRunning ? (
                                     <div className="empty-state small">
-                                        <div className="empty-icon">🔍</div>
                                         <h3>No plagiarism data</h3>
                                         <p>Run a plagiarism check to analyze code similarity between submissions.</p>
                                     </div>

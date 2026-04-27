@@ -37,6 +37,7 @@ class EvaluationState(TypedDict):
     quality_report: dict[str, Any] | None
     grader_report: dict[str, Any] | None
     needs_debugger: bool
+    test_case_results: dict[str, Any] | None
 
 
 # ---------------------------------------------------------------------------
@@ -177,11 +178,60 @@ def quality_node(state: EvaluationState) -> EvaluationState:
     """Run the code quality chain."""
     logger.info("Entering quality node")
     quality_report = run_quality_chain(
+        assignment_text=state["problem_statement"],
         student_code=state["student_code"],
     )
     return {
         **state,
         "quality_report": quality_report,
+    }
+
+
+def compare_outputs_node(state: EvaluationState) -> EvaluationState:
+    """Deterministically compare actual stdout against expected outputs.
+
+    This is the AUTHORITATIVE test-case pass/fail check.  We do NOT rely
+    on the LLM to do string comparison — it's unreliable.
+    """
+    execution_meta = state["execution_meta"]
+    expected_outputs = state["expected_outputs"]
+
+    results: list[dict[str, Any]] = []
+    passed = 0
+    total = 0
+
+    for idx, (test_key, test_data) in enumerate(
+        sorted(execution_meta.items()), start=1
+    ):
+        expected_key = f"Expected {idx}"
+        expected = expected_outputs.get(expected_key, "").strip()
+        actual = (test_data.get("stdout") or "").strip()
+        match = actual == expected
+        if match:
+            passed += 1
+        total += 1
+        results.append({
+            "test_case": test_key,
+            "expected": expected,
+            "actual": actual,
+            "passed": match,
+        })
+
+    summary = {
+        "passed": passed,
+        "total": total,
+        "pass_rate": round(passed / total, 2) if total > 0 else 0.0,
+        "details": results,
+    }
+
+    logger.info(
+        "Output comparison: %d/%d test cases passed (%.0f%%)",
+        passed, total, summary["pass_rate"] * 100,
+    )
+
+    return {
+        **state,
+        "test_case_results": summary,
     }
 
 
@@ -193,6 +243,7 @@ def grader_node(state: EvaluationState) -> EvaluationState:
         debugger_report=state["debugger_report"],
         logic_report=state["logic_report"],
         quality_report=state["quality_report"],
+        test_case_results=state.get("test_case_results"),
         total_marks=10,
     )
     return {
@@ -241,8 +292,11 @@ def build_graph():
     )
     graph.add_edge("debugger", "logic")
     graph.add_edge("skip_debugger", "logic")
+    graph.add_node("compare_outputs", compare_outputs_node)
+
     graph.add_edge("logic", "quality")
-    graph.add_edge("quality", "grader")
+    graph.add_edge("quality", "compare_outputs")
+    graph.add_edge("compare_outputs", "grader")
     graph.add_edge("grader", END)
 
     return graph.compile()
@@ -271,6 +325,7 @@ def run_evaluation_graph() -> dict:
         "quality_report": None,
         "grader_report": None,
         "needs_debugger": False,
+        "test_case_results": None,
     }
 
     final_state = graph.invoke(initial_state)

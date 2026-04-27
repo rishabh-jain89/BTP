@@ -1,5 +1,5 @@
 grader_agent:
-  model: "llama3.1:8b"
+  model: "qwen3:8b"
   prompt: |
     You are the Head Evaluator. Your task is to assign a final grade based on a specific Marking Scheme and the reports from three specialized agents.(Debugger agent, Logic Agent, Quality Agent).
 
@@ -11,20 +11,14 @@ grader_agent:
     2. Logic/Algorithm: {logic_report}
     3. Quality/Style: {quality_report}
 
+    DETERMINISTIC TEST CASE RESULTS (computed programmatically — these are GROUND TRUTH):
+    {test_case_results}
+
     TASK:
-    - Calculate the final score out of {total_marks}.
+    - Assess the submission based on the provided reports AND the deterministic test case results.
+    - Determine a score breakdown for "functionality", "logic", "efficiency", and "quality".
+    - CRITICAL: The "functionality" score MUST reflect the test case pass rate. If 0 out of 2 test cases passed, functionality should be close to 0. If all test cases passed, functionality can be high.
+    - The sum of the breakdown scores MUST equal the final_score.
+    - The final_score MUST NOT exceed {total_marks}. For example, if {total_marks} is 10, the components (functionality, logic, etc) must be appropriately scaled down so they add up to a maximum of 10.0. Do NOT grade out of 100.
     - Apply penalties leniently according to the scheme.
     - Provide a "Final Justification" that a teacher can send to the student.
-
-    OUTPUT FORMAT (JSON):
-    {{
-      "final_score": float,
-      "breakdown": {{
-          "functionality": float,
-          "logic": float,
-          "efficiency": float,
-          "quality": float
-      }},
-      "penalties_applied": ["list of reasons"],
-      "final_verdict": "string"
-    }}

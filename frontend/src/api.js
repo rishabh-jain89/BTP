@@ -100,6 +100,9 @@ export const uploadStudentCSV = (formData) =>
 export const triggerEvaluation = (submissionId) =>
   postJson(`/evaluate/individual/${submissionId}`, {}, 'Evaluation trigger failed');
 
+export const reEvaluateAssignment = (assignmentId) =>
+  postJson(`/assignments/${assignmentId}/re-evaluate`, {}, 'Re-evaluation trigger failed');
+
 export const deleteSubmission = (id) =>
   del(`/submissions/${id}/delete`, 'Delete submission failed');
 

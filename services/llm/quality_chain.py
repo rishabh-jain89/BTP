@@ -16,7 +16,7 @@ _FALLBACK: dict[str, Any] = {
 }
 
 
-def run_quality_chain(student_code: str) -> dict:
+def run_quality_chain(assignment_text: str, student_code: str) -> dict:
     """Assess code quality, style, and best practices."""
     agent = load_agent_config("quality.yaml", "quality_agent")
 
@@ -27,6 +27,7 @@ def run_quality_chain(student_code: str) -> dict:
             template=agent["prompt"],
             schema=QualitySchema,
             variables={
+                "assignment": assignment_text,
                 "student_code": student_code,
             },
         )

@@ -110,7 +110,7 @@ function AllStudentsPlagiarism() {
                             onClick={handleRunPlagiarism}
                             disabled={plagiarismRunning}
                         >
-                            {plagiarismRunning ? <><span className="spinner" /> Analyzing…</> : '🔍 Run Plagiarism Check'}
+                            {plagiarismRunning ? <><span className="spinner" /> Analyzing…</> : 'Run Plagiarism Check'}
                         </button>
                     </div>
 
@@ -195,7 +195,6 @@ function AllStudentsPlagiarism() {
                         </>
                     ) : !plagiarismRunning ? (
                         <div className="empty-state small" style={{ marginTop: '24px' }}>
-                            <div className="empty-icon">🔍</div>
                             <h3>No plagiarism data for this assignment</h3>
                             <p>Run a plagiarism check to analyze code similarity between submissions.</p>
                         </div>

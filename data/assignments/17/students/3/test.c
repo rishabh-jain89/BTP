@@ -1,9 +1,11 @@
 #include <stdio.h>
 
 int main(){
-  float a, b;
+  int a, b;
+  a=10;
+  b=5;
   scanf("%d", &a);
   scanf("%d", &b);
-  printf("%d", a+b);
+  printf("%d", a*b);
   return 0;
 }

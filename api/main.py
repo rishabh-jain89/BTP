@@ -585,6 +585,41 @@ async def evaluate_individual(
     }
 
 
+@app.post("/assignments/{assignment_id}/re-evaluate", status_code=202)
+async def re_evaluate_assignment(
+    assignment_id: int,
+    db: Session = Depends(get_db),
+):
+    """
+    Re-evaluate ALL submissions for an assignment.
+    Creates fresh evaluation jobs and queues them sequentially.
+    """
+    assignment = get_assignment(db, assignment_id)
+    if not assignment:
+        raise HTTPException(status_code=404, detail="Assignment not found")
+
+    submissions = get_submissions_by_assignment(db, assignment_id)
+    if not submissions:
+        raise HTTPException(status_code=400, detail="No submissions found for this assignment")
+
+    queued = []
+    for sub in submissions:
+        job = create_evaluation_job(db, sub["id"])
+        task = process_evaluation_job.apply_async(
+            args=[job.id],
+            queue="evaluation_queue",
+        )
+        set_job_celery_task_id(db, job.id, task.id)
+        queued.append({"submission_id": sub["id"], "job_id": job.id})
+
+    return {
+        "status": "queued",
+        "message": f"Re-evaluation queued for {len(queued)} submissions in assignment {assignment_id}",
+        "assignment_id": assignment_id,
+        "queued": queued,
+    }
+
+
 # ═══════════════════════════════════════════════════════════════════════════
 #  Deletion — Assignments & Submissions
 # ═══════════════════════════════════════════════════════════════════════════

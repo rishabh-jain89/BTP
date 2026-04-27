@@ -1,5 +1,5 @@
 question_agent:
-  model: llama3.1:8b
+  model: qwen3:8b
   prompt: |
     You are evaluating whether a student's C program satisfies a teacher's question.
 

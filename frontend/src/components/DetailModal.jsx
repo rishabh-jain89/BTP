@@ -6,7 +6,7 @@ import {
     fetchSubmissionQuestions,
 } from '../api';
 
-const TABS = ['Grader', 'Logic', 'Debugger', 'Quality', 'Q&A'];
+const TABS = ['Code & Output', 'Grader', 'Logic', 'Debugger', 'Quality', 'Q&A'];
 
 function JsonBlock({ data }) {
     if (!data) return <div className="report-value" style={{ color: 'var(--text-muted)' }}>No data available</div>;
@@ -178,7 +178,7 @@ function QuestionCard({ item, showAskedAt = true }) {
 
 export default function DetailModal({ submissionId, onClose }) {
     const [detail, setDetail] = useState(null);
-    const [tab, setTab] = useState('Grader');
+    const [tab, setTab] = useState('Code & Output');
 
     const [askText, setAskText] = useState('');
     const [askLoading, setAskLoading] = useState(false);
@@ -271,6 +271,66 @@ export default function DetailModal({ submissionId, onClose }) {
                 </div>
 
                 <div className="modal-body">
+                    {tab === 'Code & Output' && (
+                        <>
+                            <div className="report-section">
+                                <h4>Student Code</h4>
+                                {detail.code ? (
+                                    <div className="code-block-wrapper">
+                                        <div className="code-block-header">
+                                            <span className="code-block-lang">C</span>
+                                            <span className="code-block-lines">{detail.code.split('\n').length} lines</span>
+                                        </div>
+                                        <pre className="code-block"><code>{detail.code}</code></pre>
+                                    </div>
+                                ) : (
+                                    <div className="report-value" style={{ color: 'var(--text-muted)' }}>No code available</div>
+                                )}
+                            </div>
+
+                            <div className="report-section">
+                                <h4>Execution Output</h4>
+                                {(detail.execution_runs || []).length === 0 ? (
+                                    <div className="report-value" style={{ color: 'var(--text-muted)' }}>No execution runs recorded</div>
+                                ) : (
+                                    <div className="execution-runs-list">
+                                        {detail.execution_runs.map((run, i) => (
+                                            <div key={i} className="execution-run-card">
+                                                <div className="execution-run-header">
+                                                    <span className={`execution-run-status ${run.status === 'success' ? 'success' : 'failed'}`}>
+                                                        {run.status === 'success' ? '✓' : '✗'}
+                                                    </span>
+                                                    <span className="execution-run-name">{run.test_case}</span>
+                                                    <span className="execution-run-exit">exit code: {run.exit_code ?? '—'}</span>
+                                                </div>
+
+                                                {run.stdout && (
+                                                    <div className="execution-run-output">
+                                                        <div className="execution-run-output-label">stdout</div>
+                                                        <pre className="execution-run-pre">{run.stdout}</pre>
+                                                    </div>
+                                                )}
+
+                                                {run.stderr && (
+                                                    <div className="execution-run-output stderr">
+                                                        <div className="execution-run-output-label">stderr</div>
+                                                        <pre className="execution-run-pre">{run.stderr}</pre>
+                                                    </div>
+                                                )}
+
+                                                {!run.stdout && !run.stderr && (
+                                                    <div className="execution-run-output">
+                                                        <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>No output</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    )}
+
                     {tab === 'Grader' && (
                         <>
                             <div className="report-section">
