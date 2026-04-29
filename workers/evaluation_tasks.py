@@ -35,7 +35,14 @@ def _enqueue_assignment_questions_for_submission(db, submission_id: int) -> int:
 def process_evaluation_job(self, job_id: int):
     db = SessionLocal()
     try:
-        mark_job_running(db, job_id)
+        job = mark_job_running(db, job_id)
+        if job is None:
+            logger.warning("Skipping evaluation job_id=%s (not found)", job_id)
+            return {
+                "job_id": job_id,
+                "status": "skipped",
+                "reason": "job_not_found",
+            }
 
         run_evaluation_job(job_id, db)
 
@@ -65,6 +72,14 @@ def process_evaluation_job(self, job_id: int):
             "queued_questions": queued_questions,
         }
 
+    except ValueError as exc:
+        logger.warning("Evaluation task failed for job_id=%s: %s", job_id, exc)
+        mark_job_failed(db, job_id, str(exc))
+        return {
+            "job_id": job_id,
+            "status": "failed",
+            "reason": str(exc),
+        }
     except Exception as exc:
         logger.exception("Evaluation task failed for job_id=%s", job_id)
         mark_job_failed(db, job_id, str(exc))

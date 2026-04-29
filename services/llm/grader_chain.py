@@ -30,12 +30,8 @@ def _clamp_grader_result(
     """
     breakdown = result.get("breakdown", {})
 
-    # --- Hard-cap functionality based on deterministic test pass rate ---
-    if test_case_results and breakdown.get("functionality") is not None:
-        pass_rate = test_case_results.get("pass_rate", 1.0)
-        func_raw = breakdown["functionality"]
-        breakdown["functionality"] = round(func_raw * pass_rate, 1)
-        result["breakdown"] = breakdown
+    # --- (Removed) Hard-cap functionality based on deterministic test pass rate ---
+    # We no longer strictly multiply functionality by pass_rate, to allow LLMs to grant partial functionality marks for good code that just had minor output mismatches.
 
     # --- Normalize the full breakdown to sum ≤ total_marks ---
     if breakdown:

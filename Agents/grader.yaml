@@ -20,8 +20,8 @@ grader_agent:
     - CRITICAL SCORING RULES: The total marks are strictly fixed out of {total_marks}.
       * "quality" (code style, memory management, readability) MUST be given VERY LESS weightage (maximum 1 mark).
       * "logic" (algorithm choice, efficiency) MUST be given minor weightage (maximum 1 mark).
-      * "functionality" (execution correctness) MUST be given the highest weightage (maximum 8 marks).
-    - CRITICAL: The "functionality" score MUST strictly reflect the test case pass rate. If 0 out of 2 test cases passed, functionality must be 0. If all test cases passed, functionality can be up to 8.
+      * "functionality" (execution and logic implementation) MUST be given the highest weightage (maximum 8 marks).
+    - PARTIAL MARKING FOR FUNCTIONALITY: Do not grade solely on Pass/Fail of outputs. If a test case fails due to minor formatting errors or small bugs, but the student has visibly written correct core code/logic for the task, aggressively award partial marks for functionality (e.g. 4-7 marks). Only give 0 for functionality if nothing works or the logic is completely missing.
     - The sum of the breakdown scores MUST exactly equal the final_score.
     - The final_score MUST NOT exceed {total_marks} (it MUST be out of {total_marks}). Do NOT grade out of 100.
     - Apply penalties leniently according to the scheme.
